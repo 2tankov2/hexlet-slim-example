@@ -1,0 +1,15 @@
+{
+    "name": "tankov/hexlet-slim-example",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tankov",
+            "email": "tan.kov@hotmail.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "^4.3",
+        "slim/psr7": "^0.6.0",
+        "slim/http": "^0.8.0"
+    }
+}
