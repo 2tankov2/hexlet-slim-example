@@ -24,9 +24,26 @@ $app->get('/salute', function ($request, $response) {
     return $response->write('Welcome to Slim!');
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////
-$app->get('/users', function ($request, $response) {
-    return $response->write('GET /users');
+//$app->get('/users', function ($request, $response) {
+//    return $response->write('GET /users');
+//});
+
+$users = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
+
+$app->get('/users', function ($request, $response) use ($users) {
+    $term = $request->getQueryParam('term');
+    if (isset($term)) {
+        $users = array_filter($users, function ($user) use ($term) {
+            return strpos($user, $term) !== false;
+        });
+    }
+    $params = [
+        'users' => $users,
+        'term' => $term
+    ];
+    return $this->get('renderer')->render($response, 'users/list.phtml', $params);
 });
+
 
 $app->get('/users/{id}', function ($request, $response, $args) {;
     $params = ['id' => $args['id'], 'nickname' => 'user-' . $args['id']];
@@ -68,31 +85,3 @@ $app->post('/users', function ($request, $response) {
 });
 
 $app->run();
-/*
-
-$app->get('/users', function ($request, $response) {
-    return $response->write('GET /users');
-});
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-$useres = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
-
-$app->get('/users', function ($request, $response) use ($useres) {
-    $term = $request->getQueryParam('term');
-    $users = $useres;
-    if (isset($term)) {
-        $users = array_filter($users, function ($user) use ($term) {
-            return strpos($user, $term) !== false;
-        });
-    }
-    $params = [
-        'users' => $users,
-        'term' => $term
-    ];
-    return $this->get('renderer')->render($response, 'users/list.phtml', $params);
-});
-
-var_dump($_GET);
-
-*/

@@ -1,15 +1,26 @@
 <h1>Мои дети:</h1>
 <table>
+    <tr>
+        <td>
+            <b>#</b>
+        </td>
+        <td>
+            <b>NAME</b>
+        </td>
+        <td>
+            <b>AGE</b>
+        </td>
+    </tr>
     <?php foreach ($children as $child): ?>
         <tr>
             <td>
-                <?= $child['id'] ?>.
+                <?= htmlspecialchars($child['id']) ?>.
             </td>
             <td>
-                <?= $child['name'] ?>,
+                <?= htmlspecialchars($child['name']) ?>,
             </td>
             <td>
-                age: <?= $child['age'] ?>
+                <?= htmlspecialchars($child['age']) ?>
             </td>
         </tr>
     <?php endforeach ?>
