@@ -1,0 +1,16 @@
+<h1>Мои дети:</h1>
+<table>
+    <?php foreach ($children as $child): ?>
+        <tr>
+            <td>
+                <?= $child['id'] ?>.
+            </td>
+            <td>
+                <?= $child['name'] ?>,
+            </td>
+            <td>
+                age: <?= $child['age'] ?>
+            </td>
+        </tr>
+    <?php endforeach ?>
+</table>
