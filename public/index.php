@@ -30,7 +30,7 @@ $app->get('/salute', function ($request, $response) {
 
 $users = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
 
-$app->get('/users', function ($request, $response) use ($users) {
+$app->get('/names', function ($request, $response) use ($users) {
     $term = $request->getQueryParam('term');
     if (isset($term)) {
         $users = array_filter($users, function ($user) use ($term) {
@@ -45,7 +45,7 @@ $app->get('/users', function ($request, $response) use ($users) {
 });
 
 
-$app->get('/users/{id}', function ($request, $response, $args) {;
+$app->get('/names/{id}', function ($request, $response, $args) {;
     $params = ['id' => $args['id'], 'nickname' => 'user-' . $args['id']];
     // Указанный путь считается относительно базовой директории для шаблонов, заданной на этапе конфигурации;
     // $this доступен внутри анонимной функции благодаря http://php.net/manual/ru/closure.bindto.php;
@@ -80,8 +80,34 @@ $app->get('/courses/{courseId}/lessons/{id}', function ($request, $response, arr
 
 var_dump($_SERVER);
 
+$app->get('/users/new', function ($request, $response) {
+    $params = [
+        'user' => ['name' => '', 'email' => '', 'password' => '', 'passwordConfirmation' => '', 'city' => ''],
+        'errors' => []
+    ];
+    return $this->get('renderer')->render($response, "users/new.phtml", $params);
+});
+
+//$app->post('/users', function ($request, $response) {
+//    return $response->withStatus(302);
+//});
+
+
 $app->post('/users', function ($request, $response) {
-    return $response->withStatus(302);
+    $handle = fopen("./fixtures/users.json", "a", "t");
+    $user = $request->getParsedBodyParam('user');
+    $errors = 0;
+    if ($errors === 0) {
+        fwrite($handle, json_encode($user));
+        fclose($handle);
+        return $response->withHeader('Location', '/')
+            ->withStatus(302);
+    }
+    $params = [
+        'user' => $user,
+        'errors' => $errors
+    ];
+    return $this->get('renderer')->render($response, "users/new.phtml", $params);
 });
 
 $app->run();
