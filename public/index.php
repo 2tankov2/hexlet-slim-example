@@ -16,13 +16,22 @@ AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 
-$app->get('/', function ($request, $response) {
+$router = $app->getRouteCollector()->getRouteParser();
+
+$app->get('/', function ($request, $response) use ($router) {
+    $router->urlFor('users');
+    $router->urlFor('salute');
+    $router->urlFor('main');
+    $router->urlFor('names');
+    
+    $router->urlFor('children');
+    
     return $this->get('renderer')->render($response, 'index.phtml');
-});
+})->setName('main');
 ///////////////////////////////////////////////////////////////////////////////////////////////
 $app->get('/salute', function ($request, $response) {
     return $response->write('Welcome to Slim!');
-});
+})->setName('salute');
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //$app->get('/users', function ($request, $response) {
 //    return $response->write('GET /users');
@@ -42,15 +51,16 @@ $app->get('/names', function ($request, $response) use ($users) {
         'term' => $term
     ];
     return $this->get('renderer')->render($response, 'users/list.phtml', $params);
-});
+})->setName('names');
 
 
-$app->get('/names/{id}', function ($request, $response, $args) {;
-    $params = ['id' => $args['id'], 'nickname' => 'user-' . $args['id']];
+$app->get('/names/{id}', function ($request, $response, $args) use ($router) {
+    $nameRouter = $router->urlFor('name', ['id' => $args['id']]);
+    $params = ['id' => $args['id'], 'nickname' => 'user-' . $args['id'], 'url' => $nameRouter];
     // Указанный путь считается относительно базовой директории для шаблонов, заданной на этапе конфигурации;
     // $this доступен внутри анонимной функции благодаря http://php.net/manual/ru/closure.bindto.php;
     return $this->get('renderer')->render($response, 'users/show.phtml', $params);
-});
+})->setName('name');
 /////////////////////////////////////////////////////////////////////////////////////////////////
 $children = [
 ['id' => 1, 'name' => 'Maxim', 'age' => 12],
@@ -64,12 +74,12 @@ $app->get('/children', function ($request, $response) use ($children) {
         'children' => $children
     ];
     return $this->get('renderer')->render($response, 'children/child.phtml', $params);
-});
+})->setName('children');
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 $app->get('/courses/{id}', function ($request, $response, array $args) {
     $id = $args['id'];
     return $response->write("Course id: {$id}");
-});
+})->setName('courses');
 
 $app->get('/courses/{courseId}/lessons/{id}', function ($request, $response, array $args) {
     $courseId = $args['courseId'];
@@ -86,7 +96,7 @@ $app->get('/users/new', function ($request, $response) {
         'errors' => []
     ];
     return $this->get('renderer')->render($response, "users/new.phtml", $params);
-});
+})->setName('users/new');
 
 //$app->post('/users', function ($request, $response) {
 //    return $response->withStatus(302);
@@ -118,6 +128,6 @@ $app->post('/users', function ($request, $response) {
         'errors' => $errors
     ];
     return $this->get('renderer')->render($response, "users/new.phtml", $params);
-});
+})->setName('users');
 
 $app->run();
