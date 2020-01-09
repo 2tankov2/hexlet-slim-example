@@ -92,12 +92,22 @@ $app->get('/users/new', function ($request, $response) {
 //    return $response->withStatus(302);
 //});
 
+function validate($user)
+{
+    $errors = [];
+    foreach ($user as $key => $item) {
+        if(empty(trim($user[$key]))) {
+            $errors[$key] = "Can't be blank";
+        }
+    }
+    return $errors;
+}
 
 $app->post('/users', function ($request, $response) {
     $handle = fopen("./fixtures/users.json", "a", "t");
     $user = $request->getParsedBodyParam('user');
-    $errors = 0;
-    if ($errors === 0) {
+    $errors = validate($user);
+    if (empty($errors)) {
         fwrite($handle, json_encode($user));
         fclose($handle);
         return $response->withHeader('Location', '/')
