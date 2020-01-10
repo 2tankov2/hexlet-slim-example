@@ -19,7 +19,7 @@ $app->addErrorMiddleware(true, true, true);
 $router = $app->getRouteCollector()->getRouteParser();
 
 $app->get('/', function ($request, $response) use ($router) {
-    $router->urlFor('users');
+    
     $router->urlFor('salute');
     $router->urlFor('main');
     $router->urlFor('names');
@@ -33,10 +33,10 @@ $app->get('/salute', function ($request, $response) {
     return $response->write('Welcome to Slim!');
 })->setName('salute');
 ///////////////////////////////////////////////////////////////////////////////////////////////
-//$app->get('/users', function ($request, $response) {
-//    return $response->write('GET /users');
-//});
-
+$app->get('/users', function ($request, $response) {
+    return $response->write('GET /users');
+});
+///////////////////////////////////////////////////////////////////////////////////////////////
 $users = ['mike', 'mishel', 'adel', 'keks', 'kamila'];
 
 $app->get('/names', function ($request, $response) use ($users) {
@@ -98,6 +98,21 @@ $app->get('/users/new', function ($request, $response) {
     return $this->get('renderer')->render($response, "users/new.phtml", $params);
 })->setName('users/new');
 
+$app->get('/users/{name}', function ($request, $response, array $args) {
+    $name = $args['name'];
+    $lines = file('./fixtures/users.json');
+    
+    foreach ($lines as $line) {
+        $userNames[] = json_decode($line, true);
+    }
+    
+    $userName = collect($userNames)->firstWhere('name', $name);
+    if (!$userName) {
+        return $response->withStatus(404)->write('User not found');
+    }
+    return $response->write(json_encode($userName));
+});
+
 //$app->post('/users', function ($request, $response) {
 //    return $response->withStatus(302);
 //});
@@ -128,6 +143,6 @@ $app->post('/users', function ($request, $response) {
         'errors' => $errors
     ];
     return $this->get('renderer')->render($response, "users/new.phtml", $params);
-})->setName('users');
+});
 
 $app->run();
