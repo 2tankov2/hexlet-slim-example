@@ -1,0 +1,13 @@
+<h1>Пользоваетли</h1>
+<table>
+    <?php foreach ($users as $user): ?>
+        <tr>
+            <td>
+                <?= $user['id'] ?>
+            </td>
+            <td>
+                <a href="/users/<?= $user['id'] ?>"><?= $user['name'] ?></a>
+            </td>
+        </tr>
+    <?php endforeach ?>
+</table>
